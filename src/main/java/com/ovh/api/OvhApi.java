@@ -55,10 +55,6 @@ public class OvhApi {
 			appSecret = System.getenv("OVH_APPLICATION_SECRET");
 			consumerKey = System.getenv("OVH_CONSUMER_KEY");
 		} else {
-			for (String envName : env.keySet()) {
-	            System.out.format("%s=%s%n",envName, env.get(envName));
-	        }
-			
 			// find the config file
 			File configFile = new File("ovh.conf");
 			if(!configFile.exists()) {
