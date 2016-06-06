@@ -146,7 +146,7 @@ public class OvhApi {
 			request.setConnectTimeout(30000);
 			request.setRequestProperty("Content-Type", "application/json");
 			request.setRequestProperty("X-Ovh-Application", appKey);
-			// handle authentification
+			// handle authentication
 			if(needAuth) {
 				// get timestamp from local system
 				long timestamp = System.currentTimeMillis() / 1000;
