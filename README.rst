@@ -3,52 +3,52 @@ Lightweight Java wrapper around OVH's APIs. Handles all the hard work including 
 .. code:: java
 
 	import com.ovh.api.OvhApi;
-	
+
 	public class OvhApiTest {
-		
+
 		public void testCall() throws OvhApiException {
 			String endpoint = "ovh-eu";
 			String appKey = "0000000000000000";
 			String appSecret = "00000000000000000000000000000000";
 			String consumerKey = "00000000000000000000000000000000";
-			
+
 			OvhApi api = new OvhApi(endpoint, appKey, appSecret, consumerKey);
 			try {
 				api.get("/me");
 			} catch (OvhApiException e) {
-				System.out.prinln(e);
+				System.out.println(e);
 			}
 		}
 	}
-	
+
 The wrapper accepts and returns raw json Strings. You can serialize/deserialize it with any external library, the following example uses Gson from Google.
 
 .. code:: java
 
 	import com.ovh.api.OvhApi;
 	import com.google.gson.Gson;
-	
+
 	public class OvhApiTest {
-		
+
 		public class Me {
-		
+
 			public String firstname;
 			public String name;
 			public String nichandle;
-			
+
 			@Override
 			public String toString() {
 				return "Me [firstname=" + firstname + ", name=" + name + ", nichandle=" + nichandle + "]";
 			}
-			
+
 		}
-		
+
 		public void testCall() throws OvhApiException {
 			String endpoint = "ovh-eu";
 			String appKey = "0000000000000000";
 			String appSecret = "00000000000000000000000000000000";
 			String consumerKey = "00000000000000000000000000000000";
-			
+
 			OvhApi api = new OvhApi(endpoint, appKey, appSecret, consumerKey);
 			try {
 				String json = api.get("/me");
@@ -57,11 +57,11 @@ The wrapper accepts and returns raw json Strings. You can serialize/deserialize 
 				System.out.println(json);
 				System.out.println(me.toString());
 			} catch (OvhApiException e) {
-				System.out.prinln(e);
+				System.out.println(e);
 			}
 		}
 	}
-	
+
 Configuration
 =============
 
@@ -104,7 +104,7 @@ The project is hosted on github and uses gradle as a build system.
     git clone https://github.com/ovh/java-ovh.git
     cd java-ovh
     ./gradlew build
-    
+
 The compiled library will be at build/libs/java-ovh.jar
 
 You've developed a new cool feature ? Fixed an annoying bug ? We'd be happy
@@ -116,7 +116,7 @@ Run the tests
 .. code:: bash
 
    ./gradlew test
-   
+
 See the report at buid/reports/tests/index.html
 
 
