@@ -6,10 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -112,7 +110,7 @@ public class OvhApi {
 		headers.put("Content-Type", "application/json");
 		headers.put("X-Ovh-Application", appKey);
 
-		// handle authentification
+		// handle authentication
 		if (needAuth) {
 			// get timestamp from local system
 			long timestamp = System.currentTimeMillis() / 1000;
@@ -176,9 +174,9 @@ public class OvhApi {
 			} else if (responseCode == 403) {
 				throw new OvhApiException(response.toString(), OvhApiExceptionCause.AUTH_ERROR);
 			} else if (responseCode == 404) {
-				throw new OvhApiException(response.toString(), OvhApiExceptionCause.RESSOURCE_NOT_FOUND);
+				throw new OvhApiException(response.toString(), OvhApiExceptionCause.RESOURCE_NOT_FOUND);
 			} else if (responseCode == 409) {
-				throw new OvhApiException(response.toString(), OvhApiExceptionCause.RESSOURCE_CONFLICT_ERROR);
+				throw new OvhApiException(response.toString(), OvhApiExceptionCause.RESOURCE_CONFLICT_ERROR);
 			} else {
 				throw new OvhApiException(response.toString(), OvhApiExceptionCause.API_ERROR);
 			}
