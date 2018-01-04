@@ -80,107 +80,98 @@ public class OvhApi {
 			throw new IllegalArgumentException("Constructor parameters cannot be null");
 		}
 	}
-	
+
 	public String get(String path) throws OvhApiException {
-		assertAllConfigNotNull();
 		return get(path, "", true);
 	}
-	
+
 	public String get(String path, boolean needAuth) throws OvhApiException {
-		assertAllConfigNotNull();
 		return get(path, "", needAuth);
 	}
-	
-	public String get(String path, String body, boolean needAuth) throws OvhApiException {
-		assertAllConfigNotNull();
-		return call("GET", body, appKey, appSecret, consumerKey, endpoint, path, needAuth);
-	}
-	
-	public String put(String path, String body, boolean needAuth) throws OvhApiException {
-		assertAllConfigNotNull();
-		return call("PUT", body, appKey, appSecret, consumerKey, endpoint, path, needAuth);
-	}
-	
-	public String post(String path, String body, boolean needAuth) throws OvhApiException {
-		assertAllConfigNotNull();
-		return call("POST", body, appKey, appSecret, consumerKey, endpoint, path, needAuth);
-	}
-	
-	public String delete(String path, String body, boolean needAuth) throws OvhApiException {
-		assertAllConfigNotNull();
-		return call("DELETE", body, appKey, appSecret, consumerKey, endpoint, path, needAuth);
-	}
-	
-    private String call(String method, String body, String appKey, String appSecret, String consumerKey, OvhApiEndpoints endpoint, String path, boolean needAuth) throws OvhApiException
-    {
-	
-		try {
-			
-			URL url = new URL(new StringBuilder(endpoint.getUrl()).append(path).toString());
 
-			// prepare 
-			HttpURLConnection request = (HttpURLConnection) url.openConnection();
+	public String get(String path, String body, boolean needAuth) throws OvhApiException {
+		return call("GET", body, path, needAuth);
+	}
+
+	public String put(String path, String body, boolean needAuth) throws OvhApiException {
+		return call("PUT", body, path, needAuth);
+	}
+
+	public String post(String path, String body, boolean needAuth) throws OvhApiException {
+		return call("POST", body, path, needAuth);
+	}
+
+	public String delete(String path, String body, boolean needAuth) throws OvhApiException {
+		return call("DELETE", body, path, needAuth);
+	}
+
+	private String call(String method, String body, String path, boolean needAuth) throws OvhApiException {
+		String urlStr = endpoint.getUrl() + path;
+
+		Map<String, String> headers = new HashMap<>();
+		headers.put("Content-Type", "application/json");
+		headers.put("X-Ovh-Application", appKey);
+
+		// handle authentification
+		if (needAuth) {
+			// get timestamp from local system
+			long timestamp = System.currentTimeMillis() / 1000;
+
+			// build signature
+			String toSign = appSecret + "+" + consumerKey + "+" + method + "+" + urlStr + "+" + body + "+" + timestamp;
+			String signature;
+			try {
+				signature = "$1$" + Utils.sha1Hex(toSign);
+			} catch (NoSuchAlgorithmException | IOException e) {
+				throw new OvhApiException(e.getMessage(), OvhApiExceptionCause.INTERNAL_ERROR);
+			}
+
+			// set HTTP headers for authentication
+			headers.put("X-Ovh-Consumer", consumerKey);
+			headers.put("X-Ovh-Signature", signature);
+			headers.put("X-Ovh-Timestamp", Long.toString(timestamp));
+		}
+
+		return execRequest(method, urlStr, headers, body);
+	}
+
+	private static String execRequest(String method, String urlStr, Map<String, String> headers, String body) throws OvhApiException {
+		try {
+			// prepare
+			HttpURLConnection request = (HttpURLConnection) new URL(urlStr).openConnection();
 			request.setRequestMethod(method);
 			request.setReadTimeout(30000);
 			request.setConnectTimeout(30000);
-			request.setRequestProperty("Content-Type", "application/json");
-			request.setRequestProperty("X-Ovh-Application", appKey);
-			// handle authentification
-			if(needAuth) {
-				// get timestamp from local system
-				long timestamp = System.currentTimeMillis() / 1000;
 
-				// build signature
-				String toSign = new StringBuilder(appSecret)
-									.append("+")
-									.append(consumerKey)
-									.append("+")
-									.append(method)
-									.append("+")
-									.append(url)
-									.append("+")
-									.append(body)
-									.append("+")
-									.append(timestamp)
-									.toString();
-				String signature = new StringBuilder("$1$").append(Utils.sha1Hex(toSign)).toString();
-				
-				// set HTTP headers for authentication
-				request.setRequestProperty("X-Ovh-Consumer", consumerKey);
-				request.setRequestProperty("X-Ovh-Signature", signature);
-				request.setRequestProperty("X-Ovh-Timestamp", Long.toString(timestamp));
+			if (headers != null) {
+				for (Map.Entry<String, String> header: headers.entrySet()) {
+					request.setRequestProperty(header.getKey(), header.getValue());
+				}
 			}
-			
-			if(body != null && !body.isEmpty())
-            {
+
+			if (body != null && !body.isEmpty()) {
 				request.setDoOutput(true);
-                DataOutputStream out = new DataOutputStream(request.getOutputStream());
-                out.writeBytes(body);
-                out.flush();
-                out.close();
-            }
-			
-			
-			String inputLine;
-			BufferedReader in;
-			int responseCode = request.getResponseCode();
-			if (responseCode == 200) {
-				in = new BufferedReader(new InputStreamReader(request.getInputStream()));
-			} else {
-				in = new BufferedReader(new InputStreamReader(request.getErrorStream()));
+				DataOutputStream out = new DataOutputStream(request.getOutputStream());
+				out.writeBytes(body);
+				out.flush();
+				out.close();
 			}
-			
+
+			int responseCode = request.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(responseCode == 200 ? request.getInputStream() : request.getErrorStream()));
+
 			// build response
 			StringBuilder response = new StringBuilder();
-			while ((inputLine = in.readLine()) != null) {
+			for (String inputLine; (inputLine = in.readLine()) != null;) {
 				response.append(inputLine);
 			}
+
 			in.close();
-			
-			if(responseCode == 200) {
+
+			if (responseCode == 200) {
 				// return the raw JSON result
 				return response.toString();
-			} else if(responseCode == 400) {
+			} else if (responseCode == 400) {
 				throw new OvhApiException(response.toString(), OvhApiExceptionCause.BAD_PARAMETERS_ERROR);
 			} else if (responseCode == 403) {
 				throw new OvhApiException(response.toString(), OvhApiExceptionCause.AUTH_ERROR);
@@ -191,12 +182,8 @@ public class OvhApi {
 			} else {
 				throw new OvhApiException(response.toString(), OvhApiExceptionCause.API_ERROR);
 			}
-			
-		} catch (NoSuchAlgorithmException e) {
-			throw new OvhApiException(e.getMessage(), OvhApiExceptionCause.INTERNAL_ERROR);
 		} catch (IOException e) {
 			throw new OvhApiException(e.getMessage(), OvhApiExceptionCause.INTERNAL_ERROR);
 		}
-
 	}
 }
