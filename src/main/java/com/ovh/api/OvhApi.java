@@ -30,59 +30,54 @@ public class OvhApi {
 	private final String appKey;
 	private final String appSecret;
 	private final String consumerKey;
-	
+
 	public OvhApi() throws OvhApiException {
-		super();
-		
 		Map<String, String> env = System.getenv();
-		if(env.containsKey("OVH_ENDPOINT") && env.containsKey("OVH_APPLICATION_KEY") && env.containsKey("OVH_APPLICATION_SECRET") && env.containsKey("OVH_CONSUMER_KEY")) {
-			endpoint = OvhApiEndpoints.fromString("OVH_ENDPOINT");
+		if (env.containsKey("OVH_ENDPOINT") && env.containsKey("OVH_APPLICATION_KEY") && env.containsKey("OVH_APPLICATION_SECRET") && env.containsKey("OVH_CONSUMER_KEY")) {
+			endpoint = OvhApiEndpoints.fromString(System.getenv("OVH_ENDPOINT"));
 			appKey = System.getenv("OVH_APPLICATION_KEY");
 			appSecret = System.getenv("OVH_APPLICATION_SECRET");
 			consumerKey = System.getenv("OVH_CONSUMER_KEY");
-		} else {
-			// find the config file
-			File configFile = new File("ovh.conf");
-			if(!configFile.exists()) {
-				String userHomePath = System.getProperty("user.home");
-				configFile = new File(userHomePath+"/ovh.conf");
-				if(!configFile.exists()) {
-					configFile = new File("/etc/ovh.conf");
-				}
-			} 
-			
-			if(configFile.exists()) {
-				try {
-					// read the configuration file
-					Properties config = new Properties();
-					config.load(new FileInputStream(configFile));
-					
-					// get the values
-					endpoint = OvhApiEndpoints.fromString(config.getProperty("endpoint", null));
-					appKey = config.getProperty("application_key", null);
-					appSecret = config.getProperty("application_secret", null);
-					consumerKey = config.getProperty("consumer_key", null);
-					
-				} catch (Exception e) {
-					throw new OvhApiException(e.getMessage(), OvhApiExceptionCause.CONFIG_ERROR);
-				} 
-			} else {
-				throw new OvhApiException("environnment variables OVH_ENDPOINT, OVH_APPLICATION_KEY, OVH_APPLICATION_SECRET, OVH_CONSUMER_KEY or configuration files ./ovh.conf, ~/ovh.conf, /etc/ovh.conf were not found", OvhApiExceptionCause.CONFIG_ERROR);
-			}
+
+			assertAllConfigNotNull();
+			return;
 		}
-		
+
+		// find the config file
+		File configFile = Utils.getConfigFile("ovh.conf", System.getProperty("user.home") + "/ovh.conf", "/etc/ovh.conf");
+		if (configFile == null) {
+			throw new OvhApiException("environment variables OVH_ENDPOINT, OVH_APPLICATION_KEY, OVH_APPLICATION_SECRET, OVH_CONSUMER_KEY or configuration files ./ovh.conf, ~/ovh.conf, /etc/ovh.conf were not found", OvhApiExceptionCause.CONFIG_ERROR);
+		}
+
+		try {
+			// read the configuration file
+			Properties config = new Properties();
+			config.load(new FileInputStream(configFile));
+
+			// get the values
+			endpoint = OvhApiEndpoints.fromString(config.getProperty("endpoint", null));
+			appKey = config.getProperty("application_key", null);
+			appSecret = config.getProperty("application_secret", null);
+			consumerKey = config.getProperty("consumer_key", null);
+
+			assertAllConfigNotNull();
+		} catch (Exception e) {
+			throw new OvhApiException(e.getMessage(), OvhApiExceptionCause.CONFIG_ERROR);
+		}
 	}
-	
+
 	public OvhApi(OvhApiEndpoints endpoint, String appKey, String appSecret, String consumerKey) {
 		this.endpoint = endpoint;
 		this.appKey = appKey;
 		this.appSecret = appSecret;
 		this.consumerKey = consumerKey;
+
+		assertAllConfigNotNull();
 	}
-	
-	private void assertAllConfigNotNull() throws OvhApiException{
-		if(endpoint==null || appKey==null || appSecret==null || consumerKey==null) {
-			throw new OvhApiException("", OvhApiExceptionCause.CONFIG_ERROR);
+
+	private void assertAllConfigNotNull() {
+		if (endpoint == null || appKey == null || appSecret == null || consumerKey == null) {
+			throw new IllegalArgumentException("Constructor parameters cannot be null");
 		}
 	}
 	
