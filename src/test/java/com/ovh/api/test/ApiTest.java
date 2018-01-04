@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import com.ovh.api.OvhApiEndpoints;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class ApiTest {
 	
 	@Test
 	public void me() throws Exception {
-		String endpoint = "ovh-eu";
+		OvhApiEndpoints endpoint = OvhApiEndpoints.OVH_EU;
 		String appKey = "000000000000000";
 		String appSecret = "00000000000000000000000000000000";
 		String consumerKey = "00000000000000000000000000000000";

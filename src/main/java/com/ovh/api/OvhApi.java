@@ -26,31 +26,17 @@ import com.ovh.api.OvhApiException.OvhApiExceptionCause;
  */
 public class OvhApi {
 	
-	private final String endpoint;
+	private final OvhApiEndpoints endpoint;
 	private final String appKey;
 	private final String appSecret;
 	private final String consumerKey;
-	
-	private final static Map<String, String> endpoints;
-	
-	static {
-		endpoints = new HashMap<>();
-		endpoints.put("ovh-eu", "https://eu.api.ovh.com/1.0");
-		endpoints.put("ovh-ca", "https://ca.api.ovh.com/1.0");
-		endpoints.put("kimsufi-eu", "https://eu.api.kimsufi.com/1.0");
-		endpoints.put("kimsufi-ca", "https://ca.api.kimsufi.com/1.0");
-		endpoints.put("soyoustart-eu", "https://eu.api.soyoustart.com/1.0");
-		endpoints.put("soyoustart-ca", "https://ca.api.soyoustart.com/1.0");
-		endpoints.put("runabove", "https://api.runabove.com/1.0");
-		endpoints.put("runabove-ca", "https://api.runabove.com/1.0");
-	}
 	
 	public OvhApi() throws OvhApiException {
 		super();
 		
 		Map<String, String> env = System.getenv();
 		if(env.containsKey("OVH_ENDPOINT") && env.containsKey("OVH_APPLICATION_KEY") && env.containsKey("OVH_APPLICATION_SECRET") && env.containsKey("OVH_CONSUMER_KEY")) {
-			endpoint = System.getenv("OVH_ENDPOINT");
+			endpoint = OvhApiEndpoints.fromString("OVH_ENDPOINT");
 			appKey = System.getenv("OVH_APPLICATION_KEY");
 			appSecret = System.getenv("OVH_APPLICATION_SECRET");
 			consumerKey = System.getenv("OVH_CONSUMER_KEY");
@@ -72,7 +58,7 @@ public class OvhApi {
 					config.load(new FileInputStream(configFile));
 					
 					// get the values
-					endpoint = config.getProperty("endpoint", null);
+					endpoint = OvhApiEndpoints.fromString(config.getProperty("endpoint", null));
 					appKey = config.getProperty("application_key", null);
 					appSecret = config.getProperty("application_secret", null);
 					consumerKey = config.getProperty("consumer_key", null);
@@ -87,7 +73,7 @@ public class OvhApi {
 		
 	}
 	
-	public OvhApi(String endpoint, String appKey, String appSecret, String consumerKey) {		
+	public OvhApi(OvhApiEndpoints endpoint, String appKey, String appSecret, String consumerKey) {
 		this.endpoint = endpoint;
 		this.appKey = appKey;
 		this.appSecret = appSecret;
@@ -130,14 +116,12 @@ public class OvhApi {
 		return call("DELETE", body, appKey, appSecret, consumerKey, endpoint, path, needAuth);
 	}
 	
-    private String call(String method, String body, String appKey, String appSecret, String consumerKey, String endpoint, String path, boolean needAuth) throws OvhApiException
+    private String call(String method, String body, String appKey, String appSecret, String consumerKey, OvhApiEndpoints endpoint, String path, boolean needAuth) throws OvhApiException
     {
 	
 		try {
-			String indexedEndpoint = endpoints.get(endpoint);
-			endpoint = (indexedEndpoint==null)?endpoint:indexedEndpoint;
 			
-			URL url = new URL(new StringBuilder(endpoint).append(path).toString());
+			URL url = new URL(new StringBuilder(endpoint.getUrl()).append(path).toString());
 
 			// prepare 
 			HttpURLConnection request = (HttpURLConnection) url.openConnection();
