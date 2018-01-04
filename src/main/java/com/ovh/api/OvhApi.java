@@ -143,7 +143,7 @@ public class OvhApi {
 									.append("+")
 									.append(timestamp)
 									.toString();
-				String signature = new StringBuilder("$1$").append(HashSHA1(toSign)).toString();
+				String signature = new StringBuilder("$1$").append(Utils.sha1Hex(toSign)).toString();
 				
 				// set HTTP headers for authentication
 				request.setRequestProperty("X-Ovh-Consumer", consumerKey);
@@ -199,18 +199,4 @@ public class OvhApi {
 		}
 
 	}
-	
-	public static String HashSHA1(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-	    MessageDigest md;
-        md = MessageDigest.getInstance("SHA-1");
-        byte[] sha1hash = new byte[40];
-        md.update(text.getBytes("iso-8859-1"), 0, text.length());
-        sha1hash = md.digest();
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < sha1hash.length; i++) {
-            sb.append(Integer.toString((sha1hash[i] & 0xff) + 0x100, 16).substring(1));
-        }
-        return sb.toString();
-	}
-
 }
