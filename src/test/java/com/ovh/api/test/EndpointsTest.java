@@ -6,6 +6,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import com.ovh.api.OvhApiEndpoints;
+import com.ovh.api.OvhApiException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,17 +34,16 @@ public class EndpointsTest {
 		PowerMockito.when(mockedUrl.openConnection()).thenReturn(mockCon);
 	}
 	
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void raw() throws Exception {
-		OvhApi api = new OvhApi("https://foo.bar", "", "", "");
+		OvhApi api = new OvhApi(null, "", "", "");
 		api.get("/me");
-		PowerMockito.verifyNew(URL.class).withArguments("https://foo.bar/me");
 	}
 
 	
 	@Test
 	public void ovhEu() throws Exception {
-		OvhApi api = new OvhApi("ovh-eu", "", "", "");
+		OvhApi api = new OvhApi(OvhApiEndpoints.OVH_EU, "", "", "");
 		api.get("/me");
 		PowerMockito.verifyNew(URL.class).withArguments("https://eu.api.ovh.com/1.0/me");
 	}
@@ -50,49 +51,49 @@ public class EndpointsTest {
 	
 	@Test
 	public void ovhCa() throws Exception {
-		OvhApi api = new OvhApi("ovh-ca", "", "", "");
+		OvhApi api = new OvhApi(OvhApiEndpoints.OVH_CA, "", "", "");
 		api.get("/me");
 		PowerMockito.verifyNew(URL.class).withArguments("https://ca.api.ovh.com/1.0/me");
 	}
 	
 	@Test
 	public void kimsufiEu() throws Exception {
-		OvhApi api = new OvhApi("kimsufi-eu", "", "", "");
+		OvhApi api = new OvhApi(OvhApiEndpoints.KIMSUFI_EU, "", "", "");
 		api.get("/me");
 		PowerMockito.verifyNew(URL.class).withArguments("https://eu.api.kimsufi.com/1.0/me");
 	}
 	
 	@Test
 	public void kimsufiCa() throws Exception {
-		OvhApi api = new OvhApi("kimsufi-ca", "", "", "");
+		OvhApi api = new OvhApi(OvhApiEndpoints.KIMSUFI_CA, "", "", "");
 		api.get("/me");
 		PowerMockito.verifyNew(URL.class).withArguments("https://ca.api.kimsufi.com/1.0/me");
 	}
 	
 	@Test
 	public void soyoustartEu() throws Exception {
-		OvhApi api = new OvhApi("soyoustart-eu", "", "", "");
+		OvhApi api = new OvhApi(OvhApiEndpoints.SOYOUSTART_EU, "", "", "");
 		api.get("/me");
 		PowerMockito.verifyNew(URL.class).withArguments("https://eu.api.soyoustart.com/1.0/me");
 	}
 	
 	@Test
 	public void soyoustartCa() throws Exception {
-		OvhApi api = new OvhApi("soyoustart-ca", "", "", "");
+		OvhApi api = new OvhApi(OvhApiEndpoints.SOYOUSTART_CA, "", "", "");
 		api.get("/me");
 		PowerMockito.verifyNew(URL.class).withArguments("https://ca.api.soyoustart.com/1.0/me");
 	}
 	
 	@Test
 	public void runabove() throws Exception {
-		OvhApi api = new OvhApi("runabove", "", "", "");
+		OvhApi api = new OvhApi(OvhApiEndpoints.RUNABOVE, "", "", "");
 		api.get("/me");
 		PowerMockito.verifyNew(URL.class).withArguments("https://api.runabove.com/1.0/me");
 	}
 	
 	@Test
 	public void runaboveCa() throws Exception {
-		OvhApi api = new OvhApi("runabove-ca", "", "", "");
+		OvhApi api = new OvhApi(OvhApiEndpoints.RUNAVOVE_CA, "", "", "");
 		api.get("/me");
 		PowerMockito.verifyNew(URL.class).withArguments("https://api.runabove.com/1.0/me");
 	}
