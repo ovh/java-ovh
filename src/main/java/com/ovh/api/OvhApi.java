@@ -133,6 +133,49 @@ public class OvhApi {
 		return execRequest(method, urlStr, headers, body);
 	}
 
+	public static String generateConsumerKey(OvhApiEndpoints endpoint, String appKey,
+											 boolean get, String pathGet, boolean post, String pathPost,
+											 boolean put, String pathPut, boolean delete, String pathDelete) throws OvhApiException {
+		if (endpoint == null || appKey == null) {
+			throw new IllegalArgumentException("Endpoint and appKey cannot be null");
+		}
+
+		if (!get && !post && !put && !delete) {
+			throw new IllegalArgumentException("At least one method should be allowed");
+		}
+
+		if ((get && pathGet == null) || (post && pathPost == null) || (put && pathPut == null) || (delete && pathDelete == null)) {
+			throw new IllegalArgumentException("allowed methods must have a path");
+		}
+
+		String body = "{" + "\"accessRules\": [";
+
+		if (get) {
+			body += "{\"method\": \"GET\", \"path\": \"" + pathGet + "\"},";
+		}
+
+		if (post) {
+			body += "{\"method\": \"POST\", \"path\": \"" + pathPost + "\"},";
+		}
+
+		if (put) {
+			body += "{\"method\": \"PUT\", \"path\": \"" + pathPut + "\"},";
+		}
+
+		if (delete) {
+			body += "{\"method\": \"DELETE\", \"path\": \"" + pathDelete + "\"},";
+		}
+
+		body = body.substring(0, body.length() - 1);
+		body += "]}";
+
+		Map<String, String> headers = new HashMap<>();
+		headers.put("Content-Type", "application/json");
+		headers.put("X-Ovh-Application", appKey);
+
+		return execRequest("GET", endpoint.getUrl() + "/auth/credential", headers, body);
+	}
+
 	private static String execRequest(String method, String urlStr, Map<String, String> headers, String body) throws OvhApiException {
 		try {
 			// prepare
