@@ -34,11 +34,10 @@ public class EndpointsTest {
 		PowerMockito.when(mockedUrl.openConnection()).thenReturn(mockCon);
 	}
 	
-	@Test(expected = OvhApiException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void raw() throws Exception {
 		OvhApi api = new OvhApi(null, "", "", "");
 		api.get("/me");
-		PowerMockito.verifyNew(URL.class).withArguments("https://foo.bar/me");
 	}
 
 	
