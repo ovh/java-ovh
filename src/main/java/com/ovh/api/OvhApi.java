@@ -225,7 +225,8 @@ public class OvhApi {
 	    MessageDigest md;
         md = MessageDigest.getInstance("SHA-1");
         byte[] sha1hash = new byte[40];
-        md.update(text.getBytes("iso-8859-1"), 0, text.length());
+	byte[] textAsBytes = text.getBytes("iso-8859-1");
+        md.update(textAsBytes, 0, textAsBytes.length()); //use bytes not string length (some char are encoded as 2 bytes)
         sha1hash = md.digest();
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < sha1hash.length; i++) {
