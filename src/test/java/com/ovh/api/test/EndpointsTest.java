@@ -44,7 +44,7 @@ public class EndpointsTest {
 	public void ovhEu() throws Exception {
 		OvhApi api = new OvhApi("ovh-eu", "", "", "");
 		api.get("/me");
-		PowerMockito.verifyNew(URL.class).withArguments("https://eu.api.ovh.com/1.0/me");
+		PowerMockito.verifyNew(URL.class).withArguments("https://api.eu.ovhcloud.com/1.0/me");
 	}
 	
 	
@@ -52,7 +52,7 @@ public class EndpointsTest {
 	public void ovhCa() throws Exception {
 		OvhApi api = new OvhApi("ovh-ca", "", "", "");
 		api.get("/me");
-		PowerMockito.verifyNew(URL.class).withArguments("https://ca.api.ovh.com/1.0/me");
+		PowerMockito.verifyNew(URL.class).withArguments("https://api.ca.ovhcloud.com/1.0/me");
 	}
 	
 	@Test

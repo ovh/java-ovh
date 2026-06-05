@@ -35,8 +35,8 @@ public class OvhApi {
 	
 	static {
 		endpoints = new HashMap<>();
-		endpoints.put("ovh-eu", "https://eu.api.ovh.com/1.0");
-		endpoints.put("ovh-ca", "https://ca.api.ovh.com/1.0");
+		endpoints.put("ovh-eu", "https://api.eu.ovhcloud.com/1.0");
+		endpoints.put("ovh-ca", "https://api.ca.ovhcloud.com/1.0");
 		endpoints.put("kimsufi-eu", "https://eu.api.kimsufi.com/1.0");
 		endpoints.put("kimsufi-ca", "https://ca.api.kimsufi.com/1.0");
 		endpoints.put("soyoustart-eu", "https://eu.api.soyoustart.com/1.0");
