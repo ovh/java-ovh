@@ -126,20 +126,20 @@ Supported APIs
 OVH Europe
 ----------
 
-- **Documentation**: https://eu.api.ovh.com/
+- **Documentation**: https://api.eu.ovhcloud.com/
 - **Community support**: api-subscribe@ml.ovh.net
-- **Console**: https://eu.api.ovh.com/console
-- **Create application credentials**: https://eu.api.ovh.com/createApp/
-- **Create script credentials** (all keys at once): https://eu.api.ovh.com/createToken/
+- **Console**: https://api.eu.ovhcloud.com/console
+- **Create application credentials**: https://auth.eu.ovhcloud.com/api/createApp/
+- **Create script credentials** (all keys at once): https://auth.eu.ovhcloud.com/api/createToken/
 
 OVH North America
 -----------------
 
-- **Documentation**: https://ca.api.ovh.com/
+- **Documentation**: https://api.ca.ovhcloud.com/
 - **Community support**: api-subscribe@ml.ovh.net
-- **Console**: https://ca.api.ovh.com/console
-- **Create application credentials**: https://ca.api.ovh.com/createApp/
-- **Create script credentials** (all keys at once): https://ca.api.ovh.com/createToken/
+- **Console**: https://api.ca.ovhcloud.com/console
+- **Create application credentials**: https://auth.ca.ovhcloud.com/api/createApp/
+- **Create script credentials** (all keys at once): https://auth.ca.ovhcloud.com/api/createToken/
 
 So you Start Europe
 -------------------
